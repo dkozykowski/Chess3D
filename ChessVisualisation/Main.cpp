@@ -11,7 +11,7 @@
 #include <model.h>
 
 #include <iostream>
-
+    
 void updateShaderMatrixes(Shader& shader);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -23,7 +23,7 @@ const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
 const float BOARD_SCALE = 0.3f;
-const float CUBE_SCALE  = 0.2f;
+const float LAMP_SCALE  = 0.008f;
 const float PIECE_SCALE = 0.02f;
 const float SQUARE_SIZE = 0.78f;
 glm::vec3 STARTING_POS  = glm::vec3(3.5f * SQUARE_SIZE, 0, -SQUARE_SIZE);
@@ -37,7 +37,7 @@ bool firstMouse = true;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
-glm::vec3 lightPos(3, 1, 3);
+glm::vec3 lightPos(0, 4, 0);
 
 
 int main()
@@ -69,18 +69,23 @@ int main()
     glEnable(GL_DEPTH_TEST);
 
     Shader basicShader("../Shaders/basic_shader.vs.c", "../Shaders/basic_shader.fs.c");
-    Shader lightCubeShader("../Shaders/light_cube_shader.vs.c", "../Shaders/light_cube_shader.fs.c");
+    Shader lampShader("../Shaders/lamp_shader.vs.c", "../Shaders/lamp_shader.fs.c");
     Model chess_board(
         "../Models/board/board.obj",
         STARTING_POS + glm::vec3(0.0f, 0.0f, 0.0f),
         BOARD_SCALE
     );
-    Model light_cube(
-        "../Models/cube/cube.obj",
+    Model lamp1(
+        "../Models/lamp/lamp1.obj",
         STARTING_POS + glm::vec3(0.0f, 0.0f, 0.0f),
-        CUBE_SCALE
+        LAMP_SCALE
     );
-    Model bishop_black(
+    Model lamp2(
+        "../Models/lamp/lamp2.obj",
+        STARTING_POS + glm::vec3(0.0f, 0.0f, 0.0f),
+        LAMP_SCALE
+    );
+    /*Model bishop_black(
         "../Models/black/bishop/bishop.obj",
         glm::vec3(0, 0.12f, 0.0f),
         PIECE_SCALE
@@ -140,7 +145,7 @@ int main()
         "../Models/white/rook/rook.obj",
         glm::vec3(0, 0.12f, 1.28),
         PIECE_SCALE
-    );
+    );*/
 
     while (!glfwWindowShouldClose(window))
     {
@@ -154,6 +159,10 @@ int main()
         glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        updateShaderMatrixes(lampShader);
+        lamp1.Draw(lampShader, lightPos);
+        lamp2.Draw(lampShader, lightPos);
+
         updateShaderMatrixes(basicShader);
         basicShader.setVec3("lightPos", lightPos + STARTING_POS);
         basicShader.setVec3("light.position", lightPos + STARTING_POS);
@@ -164,7 +173,7 @@ int main()
         basicShader.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
         basicShader.setFloat("material.shininess", 64.0f);
 
-        bishop_black.Draw(basicShader, getSquareCoord(5, 0));
+        /*bishop_black.Draw(basicShader, getSquareCoord(5, 0));
         bishop_black.Draw(basicShader, getSquareCoord(2, 0));
         king_black.Draw(basicShader, getSquareCoord(4, 0));
         knight_black.Draw(basicShader, getSquareCoord(1, 0));
@@ -184,12 +193,11 @@ int main()
         rook_white.Draw(basicShader, getSquareCoord(0, 7));
         rook_white.Draw(basicShader, getSquareCoord(7, 7));
         for (int i = 0; i < 8; i++)
-            pawn_white.Draw(basicShader, getSquareCoord(i, 6));
+            pawn_white.Draw(basicShader, getSquareCoord(i, 6));*/
          
-
         chess_board.Draw(basicShader);
-        updateShaderMatrixes(lightCubeShader);
-        light_cube.Draw(lightCubeShader, lightPos);
+
+
 
         glfwSwapBuffers(window);
         glfwPollEvents();
