@@ -6,12 +6,13 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include <shader_m.h>
+#include <shader.h>
 #include <camera.h>
 #include <model.h>
 
 #include <iostream>
 
+void updateShaderMatrixes(Shader& shader);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
@@ -22,6 +23,7 @@ const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
 const float BOARD_SCALE = 0.3f;
+const float CUBE_SCALE  = 0.2f;
 const float PIECE_SCALE = 0.02f;
 const float SQUARE_SIZE = 0.78f;
 glm::vec3 STARTING_POS  = glm::vec3(3.5f * SQUARE_SIZE, 0, -SQUARE_SIZE);
@@ -34,6 +36,9 @@ bool firstMouse = true;
 
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
+
+glm::vec3 lightPos(1, 1, 1);
+
 
 int main()
 {
@@ -63,18 +68,24 @@ int main()
 
     glEnable(GL_DEPTH_TEST);
 
-    Shader ourShader("1.colors.vs", "1.colors.fs");
+    Shader basicShader("../Shaders/basic_shader.vs.c", "../Shaders/basic_shader.fs.c");
+    Shader lightCubeShader("../Shaders/light_cube_shader.vs.c", "../Shaders/light_cube_shader.fs.c");
     Model chess_board(
         "../Models/board/board.obj",
         STARTING_POS + glm::vec3(0.0f, 0.0f, 0.0f),
         BOARD_SCALE
+    );
+    Model light_cube(
+        "../Models/cube/cube.obj",
+        STARTING_POS + glm::vec3(0.0f, 0.0f, 0.0f),
+        CUBE_SCALE
     );
     Model bishop_black(
         "../Models/black/bishop/bishop.obj",
         glm::vec3(0, 0.12f, 0.0f),
         PIECE_SCALE
     );
-    Model king_black(
+    /*Model king_black(
         "../Models/black/king/king.obj",
         glm::vec3(0.0, 0.12f, -1.4f),
         PIECE_SCALE
@@ -129,10 +140,11 @@ int main()
         "../Models/white/rook/rook.obj",
         glm::vec3(0, 0.12f, 1.28),
         PIECE_SCALE
-    );
+    );*/
 
     while (!glfwWindowShouldClose(window))
     {
+        
         float currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
@@ -142,37 +154,36 @@ int main()
         glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        ourShader.use();
+        updateShaderMatrixes(basicShader);
+        basicShader.setVec3("lightPos", lightPos);
 
-        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-        glm::mat4 view = camera.GetViewMatrix();
-        ourShader.setMat4("projection", projection);
-        ourShader.setMat4("view", view);
 
-        bishop_black.Draw(ourShader, getSquareCoord(5, 0));
-        bishop_black.Draw(ourShader, getSquareCoord(2, 0));
-        king_black.Draw(ourShader, getSquareCoord(4, 0));
-        knight_black.Draw(ourShader, getSquareCoord(1, 0));
-        knight_black.Draw(ourShader, getSquareCoord(6, 0));
-        queen_black.Draw(ourShader, getSquareCoord(3, 0));
-        rook_black.Draw(ourShader, getSquareCoord(0, 0));
-        rook_black.Draw(ourShader, getSquareCoord(7, 0));
+        bishop_black.Draw(basicShader, getSquareCoord(5, 0));
+        /*bishop_black.Draw(basicShader, getSquareCoord(2, 0));
+        king_black.Draw(basicShader, getSquareCoord(4, 0));
+        knight_black.Draw(basicShader, getSquareCoord(1, 0));
+        knight_black.Draw(basicShader, getSquareCoord(6, 0));
+        queen_black.Draw(basicShader, getSquareCoord(3, 0));
+        rook_black.Draw(basicShader, getSquareCoord(0, 0));
+        rook_black.Draw(basicShader, getSquareCoord(7, 0));
         for (int i = 0; i < 8; i++)
-            pawn_black.Draw(ourShader, getSquareCoord(i, 1));
+            pawn_black.Draw(basicShader, getSquareCoord(i, 1));
         
-        bishop_white.Draw(ourShader, getSquareCoord(5, 7));
-        bishop_white.Draw(ourShader, getSquareCoord(2, 7));
-        king_white.Draw(ourShader, getSquareCoord(4, 7));
-        knight_white.Draw(ourShader, getSquareCoord(1, 7));
-        knight_white.Draw(ourShader, getSquareCoord(6, 7));
-        queen_white.Draw(ourShader, getSquareCoord(3, 7));
-        rook_white.Draw(ourShader, getSquareCoord(0, 7));
-        rook_white.Draw(ourShader, getSquareCoord(7, 7));
+        bishop_white.Draw(basicShader, getSquareCoord(5, 7));
+        bishop_white.Draw(basicShader, getSquareCoord(2, 7));
+        king_white.Draw(basicShader, getSquareCoord(4, 7));
+        knight_white.Draw(basicShader, getSquareCoord(1, 7));
+        knight_white.Draw(basicShader, getSquareCoord(6, 7));
+        queen_white.Draw(basicShader, getSquareCoord(3, 7));
+        rook_white.Draw(basicShader, getSquareCoord(0, 7));
+        rook_white.Draw(basicShader, getSquareCoord(7, 7));
         for (int i = 0; i < 8; i++)
-            pawn_white.Draw(ourShader, getSquareCoord(i, 6));
+            pawn_white.Draw(basicShader, getSquareCoord(i, 6));
+         */
 
-
-        chess_board.Draw(ourShader);
+        chess_board.Draw(basicShader);
+        updateShaderMatrixes(lightCubeShader);
+        light_cube.Draw(lightCubeShader, lightPos);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -180,6 +191,15 @@ int main()
 
     glfwTerminate();
     return 0;
+}
+
+void updateShaderMatrixes(Shader& shader) {
+    shader.use();
+    glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+    glm::mat4 view = camera.GetViewMatrix();
+
+    shader.setMat4("projection", projection);
+    shader.setMat4("view", view);
 }
 
 void processInput(GLFWwindow* window)
