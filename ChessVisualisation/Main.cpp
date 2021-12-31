@@ -37,7 +37,7 @@ bool firstMouse = true;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
-glm::vec3 lightPos(1, 1, 1);
+glm::vec3 lightPos(3, 1, 3);
 
 
 int main()
@@ -85,7 +85,7 @@ int main()
         glm::vec3(0, 0.12f, 0.0f),
         PIECE_SCALE
     );
-    /*Model king_black(
+    Model king_black(
         "../Models/black/king/king.obj",
         glm::vec3(0.0, 0.12f, -1.4f),
         PIECE_SCALE
@@ -140,7 +140,7 @@ int main()
         "../Models/white/rook/rook.obj",
         glm::vec3(0, 0.12f, 1.28),
         PIECE_SCALE
-    );*/
+    );
 
     while (!glfwWindowShouldClose(window))
     {
@@ -155,17 +155,23 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         updateShaderMatrixes(basicShader);
-        basicShader.setVec3("lightPos", lightPos);
-
+        basicShader.setVec3("lightPos", lightPos + STARTING_POS);
+        basicShader.setVec3("light.position", lightPos + STARTING_POS);
+        basicShader.setVec3("viewPos", camera.Position);
+        basicShader.setVec3("light.ambient", 0.2f, 0.2f, 0.2f);
+        basicShader.setVec3("light.diffuse", 0.5f, 0.5f, 0.5f);
+        basicShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+        basicShader.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
+        basicShader.setFloat("material.shininess", 64.0f);
 
         bishop_black.Draw(basicShader, getSquareCoord(5, 0));
-        /*bishop_black.Draw(basicShader, getSquareCoord(2, 0));
+        bishop_black.Draw(basicShader, getSquareCoord(2, 0));
         king_black.Draw(basicShader, getSquareCoord(4, 0));
         knight_black.Draw(basicShader, getSquareCoord(1, 0));
         knight_black.Draw(basicShader, getSquareCoord(6, 0));
         queen_black.Draw(basicShader, getSquareCoord(3, 0));
         rook_black.Draw(basicShader, getSquareCoord(0, 0));
-        rook_black.Draw(basicShader, getSquareCoord(7, 0));
+        rook_black.Draw(basicShader, getSquareCoord(7, 0)); 
         for (int i = 0; i < 8; i++)
             pawn_black.Draw(basicShader, getSquareCoord(i, 1));
         
@@ -179,7 +185,7 @@ int main()
         rook_white.Draw(basicShader, getSquareCoord(7, 7));
         for (int i = 0; i < 8; i++)
             pawn_white.Draw(basicShader, getSquareCoord(i, 6));
-         */
+         
 
         chess_board.Draw(basicShader);
         updateShaderMatrixes(lightCubeShader);
