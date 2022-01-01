@@ -68,8 +68,8 @@ int main()
 
     glEnable(GL_DEPTH_TEST);
 
-    Shader basicShader("../Shaders/basic_shader.vs.c", "../Shaders/basic_shader.fs.c");
-    Shader lampShader("../Shaders/lamp_shader.vs.c", "../Shaders/lamp_shader.fs.c");
+    Shader basicShader("../Shaders/basic_shader.vert", "../Shaders/basic_shader.frag");
+    Shader lampShader("../Shaders/lamp_shader.vert", "../Shaders/lamp_shader.frag");
     Model chess_board(
         "../Models/board/board.obj",
         STARTING_POS + glm::vec3(0.0f, 0.0f, 0.0f),
@@ -85,7 +85,7 @@ int main()
         STARTING_POS + glm::vec3(0.0f, 0.0f, 0.0f),
         LAMP_SCALE
     );
-    /*Model bishop_black(
+    Model bishop_black(
         "../Models/black/bishop/bishop.obj",
         glm::vec3(0, 0.12f, 0.0f),
         PIECE_SCALE
@@ -145,7 +145,7 @@ int main()
         "../Models/white/rook/rook.obj",
         glm::vec3(0, 0.12f, 1.28),
         PIECE_SCALE
-    );*/
+    );
 
     while (!glfwWindowShouldClose(window))
     {
@@ -173,7 +173,7 @@ int main()
         basicShader.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
         basicShader.setFloat("material.shininess", 64.0f);
 
-        /*bishop_black.Draw(basicShader, getSquareCoord(5, 0));
+        bishop_black.Draw(basicShader, getSquareCoord(5, 0));
         bishop_black.Draw(basicShader, getSquareCoord(2, 0));
         king_black.Draw(basicShader, getSquareCoord(4, 0));
         knight_black.Draw(basicShader, getSquareCoord(1, 0));
@@ -193,7 +193,7 @@ int main()
         rook_white.Draw(basicShader, getSquareCoord(0, 7));
         rook_white.Draw(basicShader, getSquareCoord(7, 7));
         for (int i = 0; i < 8; i++)
-            pawn_white.Draw(basicShader, getSquareCoord(i, 6));*/
+            pawn_white.Draw(basicShader, getSquareCoord(i, 6));
          
         chess_board.Draw(basicShader);
 

@@ -36,4 +36,18 @@
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Shaders\basic_shader.frag">
+      <Filter>Pliki zasobów</Filter>
+    </None>
+    <None Include="..\Shaders\basic_shader.vert">
+      <Filter>Pliki zasobów</Filter>
+    </None>
+    <None Include="..\Shaders\lamp_shader.frag">
+      <Filter>Pliki zasobów</Filter>
+    </None>
+    <None Include="..\Shaders\lamp_shader.vert">
+      <Filter>Pliki zasobów</Filter>
+    </None>
+  </ItemGroup>
 </Project>
