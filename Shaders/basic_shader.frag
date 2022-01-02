@@ -22,6 +22,7 @@ in vec2 TexCoords;
 uniform vec3 viewPos;
 uniform Material material;
 uniform Light light;
+uniform float brightnessLevel;
 
 void main()
 {
@@ -32,13 +33,13 @@ void main()
     vec3 norm = normalize(Normal);
     vec3 lightDir = normalize(light.position - FragPos);
     float diff = max(dot(norm, lightDir), 0.0);
-    vec3 diffuse = light.diffuse * diff * texture(material.diffuse, TexCoords).rgb;
+    vec3 diffuse = brightnessLevel * light.diffuse * diff * texture(material.diffuse, TexCoords).rgb;
 
     // specular
     vec3 viewDir = normalize(viewPos - FragPos);
     vec3 reflectDir = reflect(-lightDir, norm);
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-    vec3 specular = light.specular * (spec * material.specular);
+    vec3 specular = brightnessLevel * light.specular * (spec * material.specular);
 
     vec3 result = ambient + diffuse + specular;
     FragColor = vec4(result, 1.0);

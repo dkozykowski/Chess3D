@@ -46,6 +46,7 @@ Camera* cameras[] = {
 };
 
 glm::vec3 lampPos(0, 4, 0);
+float lamp_brightness_level = 9; // scale: 0 - 9
 
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
@@ -108,67 +109,67 @@ int main()
         STARTING_POS + glm::vec3(0.0f, 0.0f, 0.0f),
         LAMP_SCALE
     );
-    //Model bishop_black(
-    //    "../Models/black/bishop/bishop.obj",
-    //    glm::vec3(0, 0.12f, 0.0f),
-    //    PIECE_SCALE
-    //);
-    //Model king_black(
-    //    "../Models/black/king/king.obj",
-    //    glm::vec3(0.0, 0.12f, -1.4f),
-    //    PIECE_SCALE
-    //);
-    //Model pawn_black(
-    //    "../Models/black/pawn/pawn.obj",
-    //    glm::vec3(0, 0.12f, 1.9f),
-    //    PIECE_SCALE
-    //);
-    //Model knight_black(
-    //    "../Models/black/knight/knight.obj",
-    //    glm::vec3(0, 0.12f, 0.6f),
-    //    PIECE_SCALE
-    //);
-    //Model queen_black( 
-    //    "../Models/black/queen/queen.obj",
-    //    glm::vec3(0, 0.12f,-0.68f),
-    //    PIECE_SCALE
-    //);
-    //Model rook_black(
-    //    "../Models/black/rook/rook.obj",
-    //    glm::vec3(0, 0.12f, 1.28),
-    //    PIECE_SCALE
-    //);
+    Model bishop_black(
+        "../Models/black/bishop/bishop.obj",
+        glm::vec3(0, 0.12f, 0.0f),
+        PIECE_SCALE
+    );
+    Model king_black(
+        "../Models/black/king/king.obj",
+        glm::vec3(0.0, 0.12f, -1.4f),
+        PIECE_SCALE
+    );
+    Model pawn_black(
+        "../Models/black/pawn/pawn.obj",
+        glm::vec3(0, 0.12f, 1.9f),
+        PIECE_SCALE
+    );
+    Model knight_black(
+        "../Models/black/knight/knight.obj",
+        glm::vec3(0, 0.12f, 0.6f),
+        PIECE_SCALE
+    );
+    Model queen_black( 
+        "../Models/black/queen/queen.obj",
+        glm::vec3(0, 0.12f,-0.68f),
+        PIECE_SCALE
+    );
+    Model rook_black(
+        "../Models/black/rook/rook.obj",
+        glm::vec3(0, 0.12f, 1.28),
+        PIECE_SCALE
+    );
 
-    //Model bishop_white(
-    //    "../Models/white/bishop/bishop.obj",
-    //    glm::vec3(0, 0.12f, 0.0f),
-    //    PIECE_SCALE
-    //);
-    //Model king_white(
-    //    "../Models/white/king/king.obj",
-    //    glm::vec3(0.0, 0.12f, -1.4f),
-    //    PIECE_SCALE
-    //);
-    //Model pawn_white(
-    //    "../Models/white/pawn/pawn.obj",
-    //    glm::vec3(0, 0.12f, 1.9f),
-    //    PIECE_SCALE
-    //);
-    //Model knight_white(
-    //    "../Models/white/knight/knight.obj",
-    //    glm::vec3(0, 0.12f, 0.6f),
-    //    PIECE_SCALE
-    //);
-    //Model queen_white(
-    //    "../Models/white/queen/queen.obj",
-    //    glm::vec3(0, 0.12f, -0.68f),
-    //    PIECE_SCALE
-    //);
-    //Model rook_white(
-    //    "../Models/white/rook/rook.obj",
-    //    glm::vec3(0, 0.12f, 1.28),
-    //    PIECE_SCALE
-    //);
+    Model bishop_white(
+        "../Models/white/bishop/bishop.obj",
+        glm::vec3(0, 0.12f, 0.0f),
+        PIECE_SCALE
+    );
+    Model king_white(
+        "../Models/white/king/king.obj",
+        glm::vec3(0.0, 0.12f, -1.4f),
+        PIECE_SCALE
+    );
+    Model pawn_white(
+        "../Models/white/pawn/pawn.obj",
+        glm::vec3(0, 0.12f, 1.9f),
+        PIECE_SCALE
+    );
+    Model knight_white(
+        "../Models/white/knight/knight.obj",
+        glm::vec3(0, 0.12f, 0.6f),
+        PIECE_SCALE
+    );
+    Model queen_white(
+        "../Models/white/queen/queen.obj",
+        glm::vec3(0, 0.12f, -0.68f),
+        PIECE_SCALE
+    );
+    Model rook_white(
+        "../Models/white/rook/rook.obj",
+        glm::vec3(0, 0.12f, 1.28),
+        PIECE_SCALE
+    );
 
     while (!glfwWindowShouldClose(window))
     {
@@ -190,6 +191,7 @@ int main()
         spotlight_camera.Front = STARTING_POS - spotlight_camera.Position;
 
         updateShaderMatrixes(lampShader);
+        lampShader.setFloat("brightnessLevel", lamp_brightness_level / 9);
         lamp1.Draw(lampShader, lampPos);
         lamp2.Draw(lampShader, lampPos);
 
@@ -201,7 +203,6 @@ int main()
                 std::sin(angle) * SPOTLIGHT_MOVEMENT_RADIUS),
             glm::vec3(spotlight_angle, 0, glm::degrees(angle)));
 
-        
         basicShader.setVec3("viewPos", cameras[current_camera_index]->Position);
         basicShader.setVec3("lightPos", lampPos + STARTING_POS);
         basicShader.setVec3("light.position", lampPos + STARTING_POS);
@@ -210,28 +211,29 @@ int main()
         basicShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
         basicShader.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
         basicShader.setFloat("material.shininess", 64.0f);
+        basicShader.setFloat("brightnessLevel", lamp_brightness_level / 9);
 
-        //bishop_black.Draw(basicShader, getSquareCoord(5, 0));
-        //bishop_black.Draw(basicShader, getSquareCoord(2, 0));
-        //king_black.Draw(basicShader, getSquareCoord(4, 0));
-        //knight_black.Draw(basicShader, getSquareCoord(1, 0));
-        //knight_black.Draw(basicShader, getSquareCoord(6, 0));
-        //queen_black.Draw(basicShader, getSquareCoord(3, 0));
-        //rook_black.Draw(basicShader, getSquareCoord(0, 0));
-        //rook_black.Draw(basicShader, getSquareCoord(7, 0)); 
-        //for (int i = 0; i < 8; i++)
-        //    pawn_black.Draw(basicShader, getSquareCoord(i, 1));
-        //
-        //bishop_white.Draw(basicShader, getSquareCoord(5, 7));
-        //bishop_white.Draw(basicShader, getSquareCoord(2, 7));
-        //king_white.Draw(basicShader, getSquareCoord(4, 7));
-        //knight_white.Draw(basicShader, getSquareCoord(1, 7));
-        //knight_white.Draw(basicShader, getSquareCoord(6, 7));
-        //queen_white.Draw(basicShader, getSquareCoord(3, 7));
-        //rook_white.Draw(basicShader, getSquareCoord(0, 7));
-        //rook_white.Draw(basicShader, getSquareCoord(7, 7));
-        //for (int i = 0; i < 8; i++)
-        //    pawn_white.Draw(basicShader, getSquareCoord(i, 6));
+        bishop_black.Draw(basicShader, getSquareCoord(5, 0));
+        bishop_black.Draw(basicShader, getSquareCoord(2, 0));
+        king_black.Draw(basicShader, getSquareCoord(4, 0));
+        knight_black.Draw(basicShader, getSquareCoord(1, 0));
+        knight_black.Draw(basicShader, getSquareCoord(6, 0));
+        queen_black.Draw(basicShader, getSquareCoord(3, 0));
+        rook_black.Draw(basicShader, getSquareCoord(0, 0));
+        rook_black.Draw(basicShader, getSquareCoord(7, 0)); 
+        for (int i = 0; i < 8; i++)
+            pawn_black.Draw(basicShader, getSquareCoord(i, 1));
+        
+        bishop_white.Draw(basicShader, getSquareCoord(5, 7));
+        bishop_white.Draw(basicShader, getSquareCoord(2, 7));
+        king_white.Draw(basicShader, getSquareCoord(4, 7));
+        knight_white.Draw(basicShader, getSquareCoord(1, 7));
+        knight_white.Draw(basicShader, getSquareCoord(6, 7));
+        queen_white.Draw(basicShader, getSquareCoord(3, 7));
+        rook_white.Draw(basicShader, getSquareCoord(0, 7));
+        rook_white.Draw(basicShader, getSquareCoord(7, 7));
+        for (int i = 0; i < 8; i++)
+            pawn_white.Draw(basicShader, getSquareCoord(i, 6));
          
         chess_board.Draw(basicShader);
 
@@ -275,6 +277,26 @@ void processInput(GLFWwindow* window)
         spotlight_angle += 0.1;
     if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS && spotlight_angle > -45.0f)
         spotlight_angle -= 0.1;
+    if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS)
+        lamp_brightness_level = 0;
+    if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
+        lamp_brightness_level = 1;
+    if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
+        lamp_brightness_level = 2;
+    if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS)
+        lamp_brightness_level = 3;
+    if (glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS)
+        lamp_brightness_level = 5;
+    if (glfwGetKey(window, GLFW_KEY_5) == GLFW_PRESS)
+        lamp_brightness_level = 5;
+    if (glfwGetKey(window, GLFW_KEY_6) == GLFW_PRESS)
+        lamp_brightness_level = 6;
+    if (glfwGetKey(window, GLFW_KEY_7) == GLFW_PRESS)
+        lamp_brightness_level = 7;
+    if (glfwGetKey(window, GLFW_KEY_8) == GLFW_PRESS)
+        lamp_brightness_level = 8;
+    if (glfwGetKey(window, GLFW_KEY_9) == GLFW_PRESS)
+        lamp_brightness_level = 9;
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
