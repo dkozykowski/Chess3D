@@ -21,8 +21,8 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow* window);
 glm::vec3 getSquareCoord(float x, float y);
 
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
+const unsigned int SCR_WIDTH = 1000;
+const unsigned int SCR_HEIGHT = 750;
 
 const float BOARD_SCALE = 0.3f;
 const float LAMP_SCALE  = 0.008f;
@@ -118,67 +118,73 @@ int main()
         STARTING_POS + glm::vec3(0.0f, 0.0f, 0.0f),
         LAMP_SCALE
     );
-    /*Model bishop_black(
-        "../Models/black/bishop/bishop.obj",
-        glm::vec3(0, 0.12f, 0.0f),
-        PIECE_SCALE
-    );
-    Model king_black(
-        "../Models/black/king/king.obj",
-        glm::vec3(0.0, 0.12f, -1.4f),
-        PIECE_SCALE
-    );
-    Model pawn_black(
+    //Model bishop_black(
+    //    "../Models/black/bishop/bishop.obj",
+    //    glm::vec3(0, 0.12f, 3.85f),
+    //    PIECE_SCALE,
+    //    glm::vec3(0, 180, 0)
+    //);
+    //Model king_black(
+    //    "../Models/black/king/king.obj",
+    //    glm::vec3(0.0, 0.12f, 5.225f),
+    //    PIECE_SCALE,
+    //    glm::vec3(0, 180, 0)
+    //);
+    /*Model pawn_black(
         "../Models/black/pawn/pawn.obj",
         glm::vec3(0, 0.12f, 1.9f),
-        PIECE_SCALE
-    );
-    Model knight_black(
-        "../Models/black/knight/knight.obj",
-        glm::vec3(0, 0.12f, 0.6f),
-        PIECE_SCALE
-    );
-    Model queen_black( 
-        "../Models/black/queen/queen.obj",
-        glm::vec3(0, 0.12f,-0.68f),
-        PIECE_SCALE
-    );
-    Model rook_black(
-        "../Models/black/rook/rook.obj",
-        glm::vec3(0, 0.12f, 1.28),
-        PIECE_SCALE
-    );
-
-    Model bishop_white(
-        "../Models/white/bishop/bishop.obj",
-        glm::vec3(0, 0.12f, 0.0f),
-        PIECE_SCALE
-    );
-    Model king_white(
-        "../Models/white/king/king.obj",
-        glm::vec3(0.0, 0.12f, -1.4f),
-        PIECE_SCALE
-    );
-    Model pawn_white(
-        "../Models/white/pawn/pawn.obj",
-        glm::vec3(0, 0.12f, 1.9f),
-        PIECE_SCALE
-    );
-    Model knight_white(
-        "../Models/white/knight/knight.obj",
-        glm::vec3(0, 0.12f, 0.6f),
-        PIECE_SCALE
-    );
-    Model queen_white(
-        "../Models/white/queen/queen.obj",
-        glm::vec3(0, 0.12f, -0.68f),
-        PIECE_SCALE
-    );
-    Model rook_white(
-        "../Models/white/rook/rook.obj",
-        glm::vec3(0, 0.12f, 1.28),
-        PIECE_SCALE
+        PIECE_SCALE,
+        glm::vec3(0, 180, 0)
     );*/
+    //Model knight_black(
+    //    "../Models/black/knight/knight.obj",
+    //    glm::vec3(0, 0.12f, 3.2f),
+    //    PIECE_SCALE,
+    //    glm::vec3(0, 180, 0)
+    //);
+    //Model queen_black( 
+    //    "../Models/black/queen/queen.obj",
+    //    glm::vec3(0, 0.12f, 4.52f),
+    //    PIECE_SCALE,
+    //    glm::vec3(0, 180, 0)
+    //);
+    //Model rook_black(
+    //    "../Models/black/rook/rook.obj",
+    //    glm::vec3(0, 0.12f, 2.55f),
+    //    PIECE_SCALE,
+    //    glm::vec3(0, 180, 0)
+    //);
+
+    //Model bishop_white(
+    //    "../Models/white/bishop/bishop.obj",
+    //    glm::vec3(0, 0.12f, 0.0f),
+    //    PIECE_SCALE
+    //);
+    //Model king_white(
+    //    "../Models/white/king/king.obj",
+    //    glm::vec3(0.0, 0.12f, -1.4f),
+    //    PIECE_SCALE
+    //);
+    //Model pawn_white(
+    //    "../Models/white/pawn/pawn.obj",
+    //    glm::vec3(0, 0.12f, 1.9f),
+    //    PIECE_SCALE
+    //);
+    //Model knight_white(
+    //    "../Models/white/knight/knight.obj",
+    //    glm::vec3(0, 0.12f, 0.6f),
+    //    PIECE_SCALE
+    //);
+    //Model queen_white(
+    //    "../Models/white/queen/queen.obj",
+    //    glm::vec3(0, 0.12f, -0.68f),
+    //    PIECE_SCALE
+    //);
+    //Model rook_white(
+    //    "../Models/white/rook/rook.obj",
+    //    glm::vec3(0, 0.12f, 1.28),
+    //    PIECE_SCALE
+    //);
 
     while (!glfwWindowShouldClose(window))
     {
@@ -252,27 +258,27 @@ int main()
                 std::sin(angle) * SPOTLIGHT_MOVEMENT_RADIUS),
             glm::vec3(spotlight_angle, 0, glm::degrees(angle)));
 
-        /*bishop_black.Draw(basicShader, getSquareCoord(5, 0));
-        bishop_black.Draw(basicShader, getSquareCoord(2, 0));
-        king_black.Draw(basicShader, getSquareCoord(4, 0));
-        knight_black.Draw(basicShader, getSquareCoord(1, 0));
-        knight_black.Draw(basicShader, getSquareCoord(6, 0));
+        //bishop_black.Draw(basicShader, getSquareCoord(5, 0));
+        //bishop_black.Draw(basicShader, getSquareCoord(2, 0));
+        //king_black.Draw(basicShader, getSquareCoord(4, 0));
+        //knight_black.Draw(basicShader, getSquareCoord(1, 0));
+        //knight_black.Draw(basicShader, getSquareCoord(6, 0));
         queen_black.Draw(basicShader, getSquareCoord(3, 0));
-        rook_black.Draw(basicShader, getSquareCoord(0, 0));
+        //rook_black.Draw(basicShader, getSquareCoord(0, 0));
         rook_black.Draw(basicShader, getSquareCoord(7, 0)); 
-        for (int i = 0; i < 8; i++)
-            pawn_black.Draw(basicShader, getSquareCoord(i, 1));
+        //for (int i = 0; i < 8; i++)
+        //    pawn_black.Draw(basicShader, getSquareCoord(i, 1));
         
-        bishop_white.Draw(basicShader, getSquareCoord(5, 7));
-        bishop_white.Draw(basicShader, getSquareCoord(2, 7));
-        king_white.Draw(basicShader, getSquareCoord(4, 7));
-        knight_white.Draw(basicShader, getSquareCoord(1, 7));
-        knight_white.Draw(basicShader, getSquareCoord(6, 7));
-        queen_white.Draw(basicShader, getSquareCoord(3, 7));
-        rook_white.Draw(basicShader, getSquareCoord(0, 7));
-        rook_white.Draw(basicShader, getSquareCoord(7, 7));
-        for (int i = 0; i < 8; i++)
-            pawn_white.Draw(basicShader, getSquareCoord(i, 6));*/
+        //bishop_white.Draw(basicShader, getSquareCoord(5, 7));
+        //bishop_white.Draw(basicShader, getSquareCoord(2, 7));
+        //king_white.Draw(basicShader, getSquareCoord(4, 7));
+        //knight_white.Draw(basicShader, getSquareCoord(1, 7));
+        //knight_white.Draw(basicShader, getSquareCoord(6, 7));
+        //queen_white.Draw(basicShader, getSquareCoord(3, 7));
+        //rook_white.Draw(basicShader, getSquareCoord(0, 7));
+        //rook_white.Draw(basicShader, getSquareCoord(7, 7));
+        //for (int i = 0; i < 8; i++)
+        //    pawn_white.Draw(basicShader, getSquareCoord(i, 6));
          
         chess_board.Draw(basicShader);
 
@@ -317,9 +323,9 @@ void processInput(GLFWwindow* window)
         spotlight_ON = !spotlight_ON;
     }
     if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS && spotlight_angle < -0.15f)
-        spotlight_angle += 0.025;
+        spotlight_angle += 0.05;
     if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS && spotlight_angle > -45.0f)
-        spotlight_angle -= 0.025;
+        spotlight_angle -= 0.05;
     if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS)
         lamp_brightness_level = 0;
     if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
