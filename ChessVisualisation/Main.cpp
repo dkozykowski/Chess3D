@@ -45,13 +45,12 @@ Camera* cameras[] = {
     &stable_camera     // id = 2
 };
 
-
-
 glm::vec3 lampPos(0, 4, 0);
 
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
+float spotlight_angle = -30.0f;
 
 
 float deltaTime = 0.0f;
@@ -200,7 +199,7 @@ int main()
             glm::vec3(std::cos(angle) * SPOTLIGHT_MOVEMENT_RADIUS,
                 SPOTLIGHT_HEIGHT,
                 std::sin(angle) * SPOTLIGHT_MOVEMENT_RADIUS),
-            glm::vec3(0, -glm::degrees(angle), 0));
+            glm::vec3(spotlight_angle, 0, glm::degrees(angle)));
 
         
         basicShader.setVec3("viewPos", cameras[current_camera_index]->Position);
@@ -272,6 +271,10 @@ void processInput(GLFWwindow* window)
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
             moving_camera.ProcessKeyboard(RIGHT, deltaTime);
     }
+    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS && spotlight_angle < -0.15f)
+        spotlight_angle += 0.1;
+    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS && spotlight_angle > -45.0f)
+        spotlight_angle -= 0.1;
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
