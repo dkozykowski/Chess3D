@@ -109,7 +109,7 @@ int main()
         STARTING_POS + glm::vec3(0.0f, 0.0f, 0.0f),
         LAMP_SCALE
     );
-    Model bishop_black(
+    /*Model bishop_black(
         "../Models/black/bishop/bishop.obj",
         glm::vec3(0, 0.12f, 0.0f),
         PIECE_SCALE
@@ -169,7 +169,7 @@ int main()
         "../Models/white/rook/rook.obj",
         glm::vec3(0, 0.12f, 1.28),
         PIECE_SCALE
-    );
+    );*/
 
     while (!glfwWindowShouldClose(window))
     {
@@ -213,7 +213,7 @@ int main()
         basicShader.setFloat("material.shininess", 64.0f);
         basicShader.setFloat("brightnessLevel", lamp_brightness_level / 9);
 
-        bishop_black.Draw(basicShader, getSquareCoord(5, 0));
+    /*    bishop_black.Draw(basicShader, getSquareCoord(5, 0));
         bishop_black.Draw(basicShader, getSquareCoord(2, 0));
         king_black.Draw(basicShader, getSquareCoord(4, 0));
         knight_black.Draw(basicShader, getSquareCoord(1, 0));
@@ -234,7 +234,7 @@ int main()
         rook_white.Draw(basicShader, getSquareCoord(7, 7));
         for (int i = 0; i < 8; i++)
             pawn_white.Draw(basicShader, getSquareCoord(i, 6));
-         
+    */     
         chess_board.Draw(basicShader);
 
 
@@ -286,7 +286,7 @@ void processInput(GLFWwindow* window)
     if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS)
         lamp_brightness_level = 3;
     if (glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS)
-        lamp_brightness_level = 5;
+        lamp_brightness_level = 4;
     if (glfwGetKey(window, GLFW_KEY_5) == GLFW_PRESS)
         lamp_brightness_level = 5;
     if (glfwGetKey(window, GLFW_KEY_6) == GLFW_PRESS)
