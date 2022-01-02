@@ -5,11 +5,13 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#define MATH_PI 3.14159265359f
 
 #include <shader.h>
 #include <camera.h>
 #include <model.h>
 
+#include <math.h>
 #include <iostream>
     
 void updateShaderMatrixes(Shader& shader);
@@ -26,9 +28,27 @@ const float BOARD_SCALE = 0.3f;
 const float LAMP_SCALE  = 0.008f;
 const float PIECE_SCALE = 0.02f;
 const float SQUARE_SIZE = 0.78f;
+
+const float SPOTLIGHT_HEIGHT            = 1.5f;
+const float SPOTLIGHT_FULL_TURN_TIME_S  = 12.0f;
+const float SPOTLIGHT_MOVEMENT_RADIUS   = 5.0f;
 glm::vec3 STARTING_POS  = glm::vec3(3.5f * SQUARE_SIZE, 0, -SQUARE_SIZE);
 
-Camera camera(glm::vec3(-8.0f, 6.0f, 0.0f) + STARTING_POS);
+float last_camera_change_time = 0;
+int current_camera_index = 0;
+Camera spotlight_camera = Camera();
+Camera moving_camera(glm::vec3(-8.0f, 6.0f, 0.0f) + STARTING_POS);
+Camera stable_camera(glm::vec3(0, 9.0f, 0.0f) + STARTING_POS, glm::vec3(0, 1, 0), 0, -90);
+Camera* cameras[] = {
+    &spotlight_camera, // id = 0
+    &moving_camera,    // id = 1
+    &stable_camera     // id = 2
+};
+
+
+
+glm::vec3 lampPos(0, 4, 0);
+
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
@@ -36,8 +56,6 @@ bool firstMouse = true;
 
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
-
-glm::vec3 lightPos(0, 4, 0);
 
 
 int main()
@@ -47,7 +65,7 @@ int main()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Chess 3D", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -70,6 +88,12 @@ int main()
 
     Shader basicShader("../Shaders/basic_shader.vert", "../Shaders/basic_shader.frag");
     Shader lampShader("../Shaders/lamp_shader.vert", "../Shaders/lamp_shader.frag");
+    Model spotlight(
+        "../Models/spotlight/spotlight.obj",
+        STARTING_POS + glm::vec3(0.0f, 1.0f, 0.0f),
+        0.01f,
+        glm::vec3(90, 0, -90)
+    );
     Model chess_board(
         "../Models/board/board.obj",
         STARTING_POS + glm::vec3(0.0f, 0.0f, 0.0f),
@@ -85,67 +109,67 @@ int main()
         STARTING_POS + glm::vec3(0.0f, 0.0f, 0.0f),
         LAMP_SCALE
     );
-    Model bishop_black(
-        "../Models/black/bishop/bishop.obj",
-        glm::vec3(0, 0.12f, 0.0f),
-        PIECE_SCALE
-    );
-    Model king_black(
-        "../Models/black/king/king.obj",
-        glm::vec3(0.0, 0.12f, -1.4f),
-        PIECE_SCALE
-    );
-    Model pawn_black(
-        "../Models/black/pawn/pawn.obj",
-        glm::vec3(0, 0.12f, 1.9f),
-        PIECE_SCALE
-    );
-    Model knight_black(
-        "../Models/black/knight/knight.obj",
-        glm::vec3(0, 0.12f, 0.6f),
-        PIECE_SCALE
-    );
-    Model queen_black( 
-        "../Models/black/queen/queen.obj",
-        glm::vec3(0, 0.12f,-0.68f),
-        PIECE_SCALE
-    );
-    Model rook_black(
-        "../Models/black/rook/rook.obj",
-        glm::vec3(0, 0.12f, 1.28),
-        PIECE_SCALE
-    );
+    //Model bishop_black(
+    //    "../Models/black/bishop/bishop.obj",
+    //    glm::vec3(0, 0.12f, 0.0f),
+    //    PIECE_SCALE
+    //);
+    //Model king_black(
+    //    "../Models/black/king/king.obj",
+    //    glm::vec3(0.0, 0.12f, -1.4f),
+    //    PIECE_SCALE
+    //);
+    //Model pawn_black(
+    //    "../Models/black/pawn/pawn.obj",
+    //    glm::vec3(0, 0.12f, 1.9f),
+    //    PIECE_SCALE
+    //);
+    //Model knight_black(
+    //    "../Models/black/knight/knight.obj",
+    //    glm::vec3(0, 0.12f, 0.6f),
+    //    PIECE_SCALE
+    //);
+    //Model queen_black( 
+    //    "../Models/black/queen/queen.obj",
+    //    glm::vec3(0, 0.12f,-0.68f),
+    //    PIECE_SCALE
+    //);
+    //Model rook_black(
+    //    "../Models/black/rook/rook.obj",
+    //    glm::vec3(0, 0.12f, 1.28),
+    //    PIECE_SCALE
+    //);
 
-    Model bishop_white(
-        "../Models/white/bishop/bishop.obj",
-        glm::vec3(0, 0.12f, 0.0f),
-        PIECE_SCALE
-    );
-    Model king_white(
-        "../Models/white/king/king.obj",
-        glm::vec3(0.0, 0.12f, -1.4f),
-        PIECE_SCALE
-    );
-    Model pawn_white(
-        "../Models/white/pawn/pawn.obj",
-        glm::vec3(0, 0.12f, 1.9f),
-        PIECE_SCALE
-    );
-    Model knight_white(
-        "../Models/white/knight/knight.obj",
-        glm::vec3(0, 0.12f, 0.6f),
-        PIECE_SCALE
-    );
-    Model queen_white(
-        "../Models/white/queen/queen.obj",
-        glm::vec3(0, 0.12f, -0.68f),
-        PIECE_SCALE
-    );
-    Model rook_white(
-        "../Models/white/rook/rook.obj",
-        glm::vec3(0, 0.12f, 1.28),
-        PIECE_SCALE
-    );
+    //Model bishop_white(
+    //    "../Models/white/bishop/bishop.obj",
+    //    glm::vec3(0, 0.12f, 0.0f),
+    //    PIECE_SCALE
+    //);
+    //Model king_white(
+    //    "../Models/white/king/king.obj",
+    //    glm::vec3(0.0, 0.12f, -1.4f),
+    //    PIECE_SCALE
+    //);
+    //Model pawn_white(
+    //    "../Models/white/pawn/pawn.obj",
+    //    glm::vec3(0, 0.12f, 1.9f),
+    //    PIECE_SCALE
+    //);
+    //Model knight_white(
+    //    "../Models/white/knight/knight.obj",
+    //    glm::vec3(0, 0.12f, 0.6f),
+    //    PIECE_SCALE
+    //);
+    //Model queen_white(
+    //    "../Models/white/queen/queen.obj",
+    //    glm::vec3(0, 0.12f, -0.68f),
+    //    PIECE_SCALE
+    //);
+    //Model rook_white(
+    //    "../Models/white/rook/rook.obj",
+    //    glm::vec3(0, 0.12f, 1.28),
+    //    PIECE_SCALE
+    //);
 
     while (!glfwWindowShouldClose(window))
     {
@@ -159,44 +183,58 @@ int main()
         glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        float time = (float)glfwGetTime();
+        float angle = (time / SPOTLIGHT_FULL_TURN_TIME_S) * 2 * MATH_PI;
+        spotlight_camera.Position = STARTING_POS + glm::vec3(std::cos(angle) * SPOTLIGHT_MOVEMENT_RADIUS,
+                                                   SPOTLIGHT_HEIGHT,
+                                                   std::sin(angle) * SPOTLIGHT_MOVEMENT_RADIUS);
+        spotlight_camera.Front = STARTING_POS - spotlight_camera.Position;
+
         updateShaderMatrixes(lampShader);
-        lamp1.Draw(lampShader, lightPos);
-        lamp2.Draw(lampShader, lightPos);
+        lamp1.Draw(lampShader, lampPos);
+        lamp2.Draw(lampShader, lampPos);
 
         updateShaderMatrixes(basicShader);
-        basicShader.setVec3("lightPos", lightPos + STARTING_POS);
-        basicShader.setVec3("light.position", lightPos + STARTING_POS);
-        basicShader.setVec3("viewPos", camera.Position);
+
+        spotlight.Draw(basicShader,
+            glm::vec3(std::cos(angle) * SPOTLIGHT_MOVEMENT_RADIUS,
+                SPOTLIGHT_HEIGHT,
+                std::sin(angle) * SPOTLIGHT_MOVEMENT_RADIUS),
+            glm::vec3(0, -glm::degrees(angle), 0));
+
+        
+        basicShader.setVec3("viewPos", cameras[current_camera_index]->Position);
+        basicShader.setVec3("lightPos", lampPos + STARTING_POS);
+        basicShader.setVec3("light.position", lampPos + STARTING_POS);
         basicShader.setVec3("light.ambient", 0.2f, 0.2f, 0.2f);
         basicShader.setVec3("light.diffuse", 0.5f, 0.5f, 0.5f);
         basicShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
         basicShader.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
         basicShader.setFloat("material.shininess", 64.0f);
 
-        bishop_black.Draw(basicShader, getSquareCoord(5, 0));
-        bishop_black.Draw(basicShader, getSquareCoord(2, 0));
-        king_black.Draw(basicShader, getSquareCoord(4, 0));
-        knight_black.Draw(basicShader, getSquareCoord(1, 0));
-        knight_black.Draw(basicShader, getSquareCoord(6, 0));
-        queen_black.Draw(basicShader, getSquareCoord(3, 0));
-        rook_black.Draw(basicShader, getSquareCoord(0, 0));
-        rook_black.Draw(basicShader, getSquareCoord(7, 0)); 
-        for (int i = 0; i < 8; i++)
-            pawn_black.Draw(basicShader, getSquareCoord(i, 1));
-        
-        bishop_white.Draw(basicShader, getSquareCoord(5, 7));
-        bishop_white.Draw(basicShader, getSquareCoord(2, 7));
-        king_white.Draw(basicShader, getSquareCoord(4, 7));
-        knight_white.Draw(basicShader, getSquareCoord(1, 7));
-        knight_white.Draw(basicShader, getSquareCoord(6, 7));
-        queen_white.Draw(basicShader, getSquareCoord(3, 7));
-        rook_white.Draw(basicShader, getSquareCoord(0, 7));
-        rook_white.Draw(basicShader, getSquareCoord(7, 7));
-        for (int i = 0; i < 8; i++)
-            pawn_white.Draw(basicShader, getSquareCoord(i, 6));
+        //bishop_black.Draw(basicShader, getSquareCoord(5, 0));
+        //bishop_black.Draw(basicShader, getSquareCoord(2, 0));
+        //king_black.Draw(basicShader, getSquareCoord(4, 0));
+        //knight_black.Draw(basicShader, getSquareCoord(1, 0));
+        //knight_black.Draw(basicShader, getSquareCoord(6, 0));
+        //queen_black.Draw(basicShader, getSquareCoord(3, 0));
+        //rook_black.Draw(basicShader, getSquareCoord(0, 0));
+        //rook_black.Draw(basicShader, getSquareCoord(7, 0)); 
+        //for (int i = 0; i < 8; i++)
+        //    pawn_black.Draw(basicShader, getSquareCoord(i, 1));
+        //
+        //bishop_white.Draw(basicShader, getSquareCoord(5, 7));
+        //bishop_white.Draw(basicShader, getSquareCoord(2, 7));
+        //king_white.Draw(basicShader, getSquareCoord(4, 7));
+        //knight_white.Draw(basicShader, getSquareCoord(1, 7));
+        //knight_white.Draw(basicShader, getSquareCoord(6, 7));
+        //queen_white.Draw(basicShader, getSquareCoord(3, 7));
+        //rook_white.Draw(basicShader, getSquareCoord(0, 7));
+        //rook_white.Draw(basicShader, getSquareCoord(7, 7));
+        //for (int i = 0; i < 8; i++)
+        //    pawn_white.Draw(basicShader, getSquareCoord(i, 6));
          
         chess_board.Draw(basicShader);
-
 
 
         glfwSwapBuffers(window);
@@ -209,8 +247,8 @@ int main()
 
 void updateShaderMatrixes(Shader& shader) {
     shader.use();
-    glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-    glm::mat4 view = camera.GetViewMatrix();
+    glm::mat4 projection = glm::perspective(glm::radians(moving_camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+    glm::mat4 view = cameras[current_camera_index]->GetViewMatrix();
 
     shader.setMat4("projection", projection);
     shader.setMat4("view", view);
@@ -220,17 +258,20 @@ void processInput(GLFWwindow* window)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
-
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        camera.ProcessKeyboard(FORWARD, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera.ProcessKeyboard(BACKWARD, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera.ProcessKeyboard(LEFT, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.ProcessKeyboard(RIGHT, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-        camera.ResetCameraPosition();
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && (float)glfwGetTime() - last_camera_change_time > 0.5f) {
+        last_camera_change_time = (float)glfwGetTime();
+        current_camera_index = (current_camera_index + 1) % 3;
+    }
+    if (current_camera_index == 1) {
+        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+            moving_camera.ProcessKeyboard(FORWARD, deltaTime);
+        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+            moving_camera.ProcessKeyboard(BACKWARD, deltaTime);
+        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+            moving_camera.ProcessKeyboard(LEFT, deltaTime);
+        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+            moving_camera.ProcessKeyboard(RIGHT, deltaTime);
+    }
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
@@ -253,12 +294,12 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
     lastX = xpos;
     lastY = ypos;
 
-    camera.ProcessMouseMovement(xoffset, yoffset);
+    moving_camera.ProcessMouseMovement(xoffset, yoffset);
 }
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-    camera.ProcessMouseScroll(yoffset);
+    moving_camera.ProcessMouseScroll(yoffset);
 }
 
 glm::vec3 getSquareCoord(float x, float y) {
