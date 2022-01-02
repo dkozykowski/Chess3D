@@ -22,6 +22,8 @@ struct LampLight {
 };
 
 struct SpotlightLight {
+    bool ON;
+
     vec3 position;  
     vec3 direction;
     float cutOff;
@@ -86,6 +88,8 @@ vec3 CalcLampLight(LampLight lampLight, vec3 fragPos, vec3 normal)
 
 vec3 CalcSpotlightLight(SpotlightLight spotlightLight, vec3 fragPos, vec3 normal)
 {
+    if (spotlightLight.ON == false) return vec3(0);
+
     vec3 lightDir = normalize(spotlightLight.position - FragPos);
     
     float theta = dot(lightDir, normalize(-spotlightLight.direction)); 
@@ -106,11 +110,18 @@ vec3 CalcSpotlightLight(SpotlightLight spotlightLight, vec3 fragPos, vec3 normal
         float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
         vec3 specular = spotlightLight.specular * lampLight.specular * (spec * material.specular);
         
+        // spotlight (smooth edges)
+        float theta = dot(lightDir, normalize(-spotlightLight.direction)); 
+        float epsilon = (spotlightLight.cutOff - spotlightLight.outerCutOff);
+        float intensity = clamp((theta - spotlightLight.outerCutOff) / epsilon, 0.0, 1.0);
+        diffuse  *= intensity;
+        specular *= intensity;
+
         // attenuation
         float distance    = length(spotlightLight.position - FragPos);
         float attenuation = 1.0 / (spotlightLight.constant + spotlightLight.linear * distance + spotlightLight.quadratic * (distance * distance));    
 
-        // ambient  *= attenuation; // remove attenuation from ambient, as otherwise at large distances the light would be darker inside than outside the spotlight due the ambient term in the else branche
+        ambient  *= attenuation;
         diffuse   *= attenuation;
         specular *= attenuation;   
             

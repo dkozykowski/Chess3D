@@ -52,6 +52,8 @@ float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
 float spotlight_angle = -30.0f;
+bool spotlight_ON = false;
+float last_spotlight_change_time = 0;
 
 
 float deltaTime = 0.0f;
@@ -203,14 +205,15 @@ int main()
 
         updateShaderMatrixes(spotlightShader);
         lampShader.setFloat("brightnessLevel", 1);
-        spotlight2.Draw(spotlightShader,
-            glm::vec3(std::cos(angle) * SPOTLIGHT_MOVEMENT_RADIUS,
-                SPOTLIGHT_HEIGHT,
-                std::sin(angle) * SPOTLIGHT_MOVEMENT_RADIUS),
-            glm::vec3(spotlight_angle, 0, glm::degrees(angle)));
+        if (spotlight_ON) {
+            spotlight2.Draw(spotlightShader,
+                glm::vec3(std::cos(angle) * SPOTLIGHT_MOVEMENT_RADIUS,
+                    SPOTLIGHT_HEIGHT,
+                    std::sin(angle) * SPOTLIGHT_MOVEMENT_RADIUS),
+                glm::vec3(spotlight_angle, 0, glm::degrees(angle)));
+        }
 
         updateShaderMatrixes(basicShader);
-
 
         basicShader.setVec3("viewPos", cameras[current_camera_index]->Position);
 
@@ -225,11 +228,13 @@ int main()
         basicShader.setFloat("lampLight.brightnessLevel", lamp_brightness_level / 9);
 
         // spotlight light definition
-        float spotlight_aim_h = 5;
+        float spotlight_aim_h = (spotlight_angle + 45) / 10 - 1.5f;
         glm::vec3 spotlight_aim = glm::vec3(STARTING_POS.x, spotlight_aim_h, STARTING_POS.z);
+        basicShader.setBool("spotlightLight.ON", spotlight_ON);
         basicShader.setVec3("spotlightLight.direction", spotlight_aim - spotlight_camera.Position);
         basicShader.setVec3("spotlightLight.position", spotlight_camera.Position);
-        basicShader.setFloat("spotlightspotlightLight.cutOff", glm::cos(glm::radians(90.0f)));
+        basicShader.setFloat("spotlightLight.cutOff", glm::cos(glm::radians(30.5f)));
+        basicShader.setFloat("spotlightLight.outerCutOff", glm::cos(glm::radians(45.5f)));
         basicShader.setVec3("spotlightLight.ambient", 0.1f, 0.1f, 0.1f);
         basicShader.setVec3("spotlightLight.diffuse", 0.8f, 0.8f, 0.8f);
         basicShader.setVec3("spotlightLight.specular", 1.0f, 1.0f, 1.0f);
@@ -307,10 +312,14 @@ void processInput(GLFWwindow* window)
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
             moving_camera.ProcessKeyboard(RIGHT, deltaTime);
     }
+    if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS && (float)glfwGetTime() - last_spotlight_change_time > 0.25f) {
+        last_spotlight_change_time = (float)glfwGetTime();
+        spotlight_ON = !spotlight_ON;
+    }
     if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS && spotlight_angle < -0.15f)
-        spotlight_angle += 0.1;
+        spotlight_angle += 0.025;
     if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS && spotlight_angle > -45.0f)
-        spotlight_angle -= 0.1;
+        spotlight_angle -= 0.025;
     if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS)
         lamp_brightness_level = 0;
     if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
