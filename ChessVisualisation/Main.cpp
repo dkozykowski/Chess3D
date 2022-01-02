@@ -88,8 +88,15 @@ int main()
 
     Shader basicShader("../Shaders/basic_shader.vert", "../Shaders/basic_shader.frag");
     Shader lampShader("../Shaders/lamp_shader.vert", "../Shaders/lamp_shader.frag");
+    Shader spotlightShader("../Shaders/lamp_shader.vert", "../Shaders/lamp_shader.frag");
     Model spotlight(
         "../Models/spotlight/spotlight.obj",
+        STARTING_POS + glm::vec3(0.0f, 1.0f, 0.0f),
+        0.01f,
+        glm::vec3(90, 0, -90)
+    );
+    Model spotlight2(
+        "../Models/spotlight/spotlight2.obj",
         STARTING_POS + glm::vec3(0.0f, 1.0f, 0.0f),
         0.01f,
         glm::vec3(90, 0, -90)
@@ -109,7 +116,7 @@ int main()
         STARTING_POS + glm::vec3(0.0f, 0.0f, 0.0f),
         LAMP_SCALE
     );
-    Model bishop_black(
+    /*Model bishop_black(
         "../Models/black/bishop/bishop.obj",
         glm::vec3(0, 0.12f, 0.0f),
         PIECE_SCALE
@@ -169,7 +176,7 @@ int main()
         "../Models/white/rook/rook.obj",
         glm::vec3(0, 0.12f, 1.28),
         PIECE_SCALE
-    );
+    );*/
 
     while (!glfwWindowShouldClose(window))
     {
@@ -194,7 +201,44 @@ int main()
         lampShader.setFloat("brightnessLevel", lamp_brightness_level / 9);
         lamp2.Draw(lampShader, lampPos);
 
+        updateShaderMatrixes(spotlightShader);
+        lampShader.setFloat("brightnessLevel", 1);
+        spotlight2.Draw(spotlightShader,
+            glm::vec3(std::cos(angle) * SPOTLIGHT_MOVEMENT_RADIUS,
+                SPOTLIGHT_HEIGHT,
+                std::sin(angle) * SPOTLIGHT_MOVEMENT_RADIUS),
+            glm::vec3(spotlight_angle, 0, glm::degrees(angle)));
+
         updateShaderMatrixes(basicShader);
+
+
+        basicShader.setVec3("viewPos", cameras[current_camera_index]->Position);
+
+        // lamp light definition
+        basicShader.setVec3("lampLight.position", lampPos + STARTING_POS);
+        basicShader.setFloat("lampLight.constant", 1.0f);
+        basicShader.setFloat("lampLight.linear", 0.004);
+        basicShader.setFloat("lampLight.quadratic", 0.009);
+        basicShader.setVec3("lampLight.ambient", 0.2f, 0.2f, 0.2f);
+        basicShader.setVec3("lampLight.diffuse", 0.9f, 0.9f, 0.9f);
+        basicShader.setVec3("lampLight.specular", 1.0f, 1.0f, 1.0f);
+        basicShader.setFloat("lampLight.brightnessLevel", lamp_brightness_level / 9);
+
+        // spotlight light definition
+        float spotlight_aim_h = 5;
+        glm::vec3 spotlight_aim = glm::vec3(STARTING_POS.x, spotlight_aim_h, STARTING_POS.z);
+        basicShader.setVec3("spotlightLight.direction", spotlight_aim - spotlight_camera.Position);
+        basicShader.setVec3("spotlightLight.position", spotlight_camera.Position);
+        basicShader.setFloat("spotlightspotlightLight.cutOff", glm::cos(glm::radians(90.0f)));
+        basicShader.setVec3("spotlightLight.ambient", 0.1f, 0.1f, 0.1f);
+        basicShader.setVec3("spotlightLight.diffuse", 0.8f, 0.8f, 0.8f);
+        basicShader.setVec3("spotlightLight.specular", 1.0f, 1.0f, 1.0f);
+        basicShader.setFloat("spotlightLight.constant", 1.0f);
+        basicShader.setFloat("spotlightLight.linear", 0.09f);
+        basicShader.setFloat("spotlightLight.quadratic", 0.032f);
+
+        basicShader.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
+        basicShader.setFloat("material.shininess", 64.0f);
 
         lamp1.Draw(basicShader, lampPos);
         spotlight.Draw(basicShader,
@@ -203,20 +247,7 @@ int main()
                 std::sin(angle) * SPOTLIGHT_MOVEMENT_RADIUS),
             glm::vec3(spotlight_angle, 0, glm::degrees(angle)));
 
-        basicShader.setVec3("viewPos", cameras[current_camera_index]->Position);
-        basicShader.setVec3("lightPos", lampPos + STARTING_POS);
-        basicShader.setVec3("light.position", lampPos + STARTING_POS);
-        basicShader.setFloat("light.constant", 1.0f);
-        basicShader.setFloat("light.linear", 0.004);
-        basicShader.setFloat("light.quadratic", 0.009);
-        basicShader.setVec3("light.ambient", 0.2f, 0.2f, 0.2f);
-        basicShader.setVec3("light.diffuse", 0.9f, 0.9f, 0.9f);
-        basicShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
-        basicShader.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
-        basicShader.setFloat("material.shininess", 64.0f);
-        basicShader.setFloat("brightnessLevel", lamp_brightness_level / 9);
-
-        bishop_black.Draw(basicShader, getSquareCoord(5, 0));
+        /*bishop_black.Draw(basicShader, getSquareCoord(5, 0));
         bishop_black.Draw(basicShader, getSquareCoord(2, 0));
         king_black.Draw(basicShader, getSquareCoord(4, 0));
         knight_black.Draw(basicShader, getSquareCoord(1, 0));
@@ -236,7 +267,7 @@ int main()
         rook_white.Draw(basicShader, getSquareCoord(0, 7));
         rook_white.Draw(basicShader, getSquareCoord(7, 7));
         for (int i = 0; i < 8; i++)
-            pawn_white.Draw(basicShader, getSquareCoord(i, 6));
+            pawn_white.Draw(basicShader, getSquareCoord(i, 6));*/
          
         chess_board.Draw(basicShader);
 
