@@ -62,6 +62,10 @@ float lastSpotlightChangeTime = 0;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
+int currentShaderIndex = 0;
+
+bool useBlinn = true;
+
 
 int main()
 {
@@ -99,7 +103,7 @@ int main()
     Shader lampShader("../Shaders/lamp_shader.vert", "../Shaders/lamp_shader.frag");
     Shader spotlightShader("../Shaders/lamp_shader.vert", "../Shaders/lamp_shader.frag");
 
-    int current_shader_index = 0;
+
     Shader* shaders[] = {
         &phongShader,   // id = 0
         &gouraudShader  // id = 1
@@ -161,18 +165,18 @@ int main()
                 glm::vec3(spotlightAngle, 0, glm::degrees(angle)));
         }
 
-        UpdateShaderMatrixes(*shaders[current_shader_index]);
-        UpdateLightningShaderSettings(*shaders[current_shader_index]);
+        UpdateShaderMatrixes(*shaders[currentShaderIndex]);
+        UpdateLightningShaderSettings(*shaders[currentShaderIndex]);
 
 
-        lamp.Draw(*shaders[current_shader_index], lampPos);
-        spotlight.Draw(*shaders[current_shader_index],
+        lamp.Draw(*shaders[currentShaderIndex], lampPos);
+        spotlight.Draw(*shaders[currentShaderIndex],
             glm::vec3(std::cos(angle) * SPOTLIGHT_MOVEMENT_RADIUS,
                 SPOTLIGHT_HEIGHT,
                 std::sin(angle) * SPOTLIGHT_MOVEMENT_RADIUS),
             glm::vec3(spotlightAngle, 0, glm::degrees(angle)));
 
-        figureset.Draw(*shaders[current_shader_index]);
+        figureset.Draw(*shaders[currentShaderIndex]);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -223,6 +227,7 @@ void UpdateLightningShaderSettings(Shader& shader) {
 
     shader.SetVec3("material.specular", 0.5f, 0.5f, 0.5f);
     shader.SetFloat("material.shininess", 64.0f);
+    shader.SetBool("useBlinn", useBlinn);
 }
 
 void ProcessInput(GLFWwindow* window)
@@ -243,6 +248,14 @@ void ProcessInput(GLFWwindow* window)
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
             movingCamera.ProcessKeyboard(RIGHT, deltaTime);
     }
+    if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
+        currentShaderIndex = 0;
+    if (glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS)
+        currentShaderIndex = 1;
+    if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS)
+        useBlinn = true;
+    if (glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS)
+        useBlinn = false;
     if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS && (float)glfwGetTime() - lastSpotlightChangeTime > 0.25f) {
         lastSpotlightChangeTime = (float)glfwGetTime();
         spotlightLightIsActive = !spotlightLightIsActive;

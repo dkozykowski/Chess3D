@@ -47,6 +47,7 @@ uniform Material material;
 uniform LampLight lampLight;
 uniform SpotlightLight spotlightLight;
 uniform float brightnessLevel;
+uniform bool useBlinn;
 
 vec3 CalcLampLight(LampLight lampLight, vec3 fragPos, vec3 normal);
 vec3 CalcSpotlightLight(SpotlightLight spotlightLight, vec3 fragPos, vec3 normal);
@@ -75,8 +76,17 @@ vec3 CalcLampLight(LampLight lampLight, vec3 fragPos, vec3 normal)
 
     // specular
     vec3 viewDir = normalize(viewPos - fragPos);
-    vec3 reflectDir = reflect(-lightDir, norm);
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+    float spec = 0.0;
+    if(useBlinn)
+    {
+        vec3 halfwayDir = normalize(lightDir + viewDir);  
+        spec = pow(max(dot(norm, halfwayDir), 0.0), 32.0);
+    }
+    else
+    {
+        vec3 reflectDir = reflect(-lightDir, norm);
+        spec = pow(max(dot(viewDir, reflectDir), 0.0), 8.0);
+    }
     vec3 specular = lampLight.brightnessLevel * lampLight.specular * (spec * material.specular);
 
     ambient  *= attenuation; 
@@ -104,8 +114,17 @@ vec3 CalcSpotlightLight(SpotlightLight spotlightLight, vec3 fragPos, vec3 normal
         
     // specular
     vec3 viewDir = normalize(viewPos - FragPos);
-    vec3 reflectDir = reflect(-lightDir, norm);  
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+    float spec = 0.0;
+    if(useBlinn)
+    {
+        vec3 halfwayDir = normalize(lightDir + viewDir);  
+        spec = pow(max(dot(norm, halfwayDir), 0.0), 32.0);
+    }
+    else
+    {
+        vec3 reflectDir = reflect(-lightDir, norm);
+        spec = pow(max(dot(viewDir, reflectDir), 0.0), 8.0);
+    }
     vec3 specular = spotlightLight.specular * lampLight.specular * (spec * material.specular);
         
     // spotlight (smooth edges)
