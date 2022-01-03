@@ -48,14 +48,21 @@ uniform LampLight lampLight;
 uniform SpotlightLight spotlightLight;
 uniform float brightnessLevel;
 uniform bool useBlinn;
+uniform float fogLevel;
 
 vec3 CalcLampLight(LampLight lampLight, vec3 fragPos, vec3 normal);
 vec3 CalcSpotlightLight(SpotlightLight spotlightLight, vec3 fragPos, vec3 normal);
+float CalcFogFactor();
 
 void main()
 {
     vec3 result = CalcLampLight(lampLight, FragPos, Normal);
     result += CalcSpotlightLight(spotlightLight, FragPos, Normal);
+
+    float fogFactor = CalcFogFactor();
+   
+    result = mix(vec3(0.05f), result, fogFactor);
+
     FragColor = vec4(result, 1.0);
 }
 
@@ -94,6 +101,17 @@ vec3 CalcLampLight(LampLight lampLight, vec3 fragPos, vec3 normal)
     specular *= attenuation; 
 
     return (ambient + diffuse + specular);
+}
+
+float CalcFogFactor() {
+    if (fogLevel == 0) return 1;
+    float gradient = (fogLevel * fogLevel - 7 * fogLevel + 28) / 2;
+    float distance = length(viewPos - FragPos);
+
+    float fogFactor = exp(-pow((distance / gradient), 5)) ;
+
+    fogFactor = clamp(fogFactor, 0.0, 1.0);
+    return fogFactor;
 }
 
 vec3 CalcSpotlightLight(SpotlightLight spotlightLight, vec3 fragPos, vec3 normal)

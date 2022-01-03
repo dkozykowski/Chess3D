@@ -51,7 +51,9 @@ uniform LampLight lampLight;
 uniform SpotlightLight spotlightLight;
 uniform float brightnessLevel;
 uniform bool useBlinn;
+uniform float fogLevel;
 
+float CalcFogFactor(vec3 FragPos);
 vec3 CalcLampLight(LampLight lampLight, vec3 fragPos, vec3 normal, vec2 TexCoords);
 vec3 CalcSpotlightLight(SpotlightLight spotlightLight, vec3 fragPos, vec3 normal, vec2 TexCoords);
 
@@ -66,9 +68,23 @@ void main()
 
     vec3 result = CalcLampLight(lampLight, FragPos, Normal, TexCoords);
     result += CalcSpotlightLight(spotlightLight, FragPos, Normal, TexCoords);
+
+    float fogFactor = CalcFogFactor(FragPos);   
+    result = mix(vec3(0.05f), result, fogFactor);
+
     fragColor = vec4(result, 1.0);
 }
 
+float CalcFogFactor(vec3 FragPos) {
+    if (fogLevel == 0) return 1;
+    float gradient = (fogLevel * fogLevel - 7 * fogLevel + 28) / 2;
+    float distance = length(viewPos - FragPos);
+
+    float fogFactor = exp(-pow((distance / gradient), 5)) ;
+
+    fogFactor = clamp(fogFactor, 0.0, 1.0);
+    return fogFactor;
+}
 
 vec3 CalcLampLight(LampLight lampLight, vec3 fragPos, vec3 normal, vec2 TexCoords) 
 {

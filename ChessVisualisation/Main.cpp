@@ -66,6 +66,9 @@ int currentShaderIndex = 0;
 
 bool useBlinn = true;
 
+float lastFogChangeTime = 0;
+int fogLevel = 0;
+
 
 int main()
 {
@@ -193,12 +196,13 @@ void UpdateShaderMatrixes(Shader& shader) {
 
     shader.SetMat4("projection", projection);
     shader.SetMat4("view", view);
+
+    shader.SetVec3("viewPos", cameras[currentCameraIndex]->Position);
+    shader.SetFloat("fogLevel", fogLevel);
 }
 
 void UpdateLightningShaderSettings(Shader& shader) {
     shader.Use();
-
-    shader.SetVec3("viewPos", cameras[currentCameraIndex]->Position);
 
     // lamp light definition
     shader.SetVec3("lampLight.position", lampPos + STARTING_POS);
@@ -259,6 +263,10 @@ void ProcessInput(GLFWwindow* window)
     if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS && (float)glfwGetTime() - lastSpotlightChangeTime > 0.25f) {
         lastSpotlightChangeTime = (float)glfwGetTime();
         spotlightLightIsActive = !spotlightLightIsActive;
+    }
+    if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS && (float)glfwGetTime() - lastFogChangeTime > 0.5f) {
+        lastFogChangeTime = (float)glfwGetTime();
+        fogLevel = (fogLevel + 1) % 4;
     }
     if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS && spotlightAngle < -0.15f)
         spotlightAngle += 0.05;
