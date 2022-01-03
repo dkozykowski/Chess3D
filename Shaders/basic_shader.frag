@@ -93,42 +93,34 @@ vec3 CalcSpotlightLight(SpotlightLight spotlightLight, vec3 fragPos, vec3 normal
     vec3 lightDir = normalize(spotlightLight.position - FragPos);
     
     float theta = dot(lightDir, normalize(-spotlightLight.direction)); 
-    
-    if(theta > spotlightLight.cutOff)
-    {    
-        // ambient
-        vec3 ambient = spotlightLight.ambient * texture(material.diffuse, TexCoords).rgb;
+      
+    // ambient
+    vec3 ambient = spotlightLight.ambient * texture(material.diffuse, TexCoords).rgb;
         
-        // diffuse 
-        vec3 norm = normalize(Normal);
-        float diff = max(dot(norm, lightDir), 0.0);
-        vec3 diffuse = spotlightLight.diffuse * diff * texture(material.diffuse, TexCoords).rgb;  
+    // diffuse 
+    vec3 norm = normalize(Normal);
+    float diff = max(dot(norm, lightDir), 0.0);
+    vec3 diffuse = spotlightLight.diffuse * diff * texture(material.diffuse, TexCoords).rgb;  
         
-        // specular
-        vec3 viewDir = normalize(viewPos - FragPos);
-        vec3 reflectDir = reflect(-lightDir, norm);  
-        float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-        vec3 specular = spotlightLight.specular * lampLight.specular * (spec * material.specular);
+    // specular
+    vec3 viewDir = normalize(viewPos - FragPos);
+    vec3 reflectDir = reflect(-lightDir, norm);  
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+    vec3 specular = spotlightLight.specular * lampLight.specular * (spec * material.specular);
         
-        // spotlight (smooth edges)
-        float theta = dot(lightDir, normalize(-spotlightLight.direction)); 
-        float epsilon = (spotlightLight.cutOff - spotlightLight.outerCutOff);
-        float intensity = clamp((theta - spotlightLight.outerCutOff) / epsilon, 0.0, 1.0);
-        diffuse  *= intensity;
-        specular *= intensity;
+    // spotlight (smooth edges)
+    float epsilon = (spotlightLight.cutOff - spotlightLight.outerCutOff);
+    float intensity = clamp((theta - spotlightLight.outerCutOff) / epsilon, 0.0, 1.0);
+    diffuse  *= intensity;
+    specular *= intensity;
 
-        // attenuation
-        float distance    = length(spotlightLight.position - FragPos);
-        float attenuation = 1.0 / (spotlightLight.constant + spotlightLight.linear * distance + spotlightLight.quadratic * (distance * distance));    
+    // attenuation
+    float distance    = length(spotlightLight.position - FragPos);
+    float attenuation = 1.0 / (spotlightLight.constant + spotlightLight.linear * distance + spotlightLight.quadratic * (distance * distance));    
 
-        ambient  *= attenuation;
-        diffuse   *= attenuation;
-        specular *= attenuation;   
+    ambient  *= attenuation;
+    diffuse   *= attenuation;
+    specular *= attenuation;   
             
-        return (ambient + diffuse + specular);
-    }
-    else 
-    {
-        return vec3(0);
-    }
+    return (ambient + diffuse + specular);
 }
