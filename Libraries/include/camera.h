@@ -59,7 +59,7 @@ public:
         Position = POSITION;
         Yaw = YAW;
         Pitch = PITCH;
-        updateCameraVectors();
+        UpdateCameraVectors();
     }
 
     glm::mat4 GetViewMatrix()
@@ -96,7 +96,7 @@ public:
                 Pitch = -89.0f;
         }
 
-        updateCameraVectors();
+        UpdateCameraVectors();
     }
 
     void ProcessMouseScroll(float yoffset)
@@ -109,7 +109,7 @@ public:
     }
 
 private:
-    void updateCameraVectors()
+    void UpdateCameraVectors()
     {
         glm::vec3 front;
         front.x = cos(glm::radians(Yaw)) * cos(glm::radians(Pitch));

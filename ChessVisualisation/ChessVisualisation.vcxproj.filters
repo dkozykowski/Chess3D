@@ -35,18 +35,27 @@
     <ClInclude Include="..\Libraries\include\model.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
+    <ClInclude Include="..\Libraries\include\figureset.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Shaders\basic_shader.frag">
+    <None Include="..\Shaders\phong_lighting_shader.frag">
       <Filter>Pliki zasobów</Filter>
     </None>
-    <None Include="..\Shaders\basic_shader.vert">
+    <None Include="..\Shaders\phong_lighting_shader.vert">
       <Filter>Pliki zasobów</Filter>
     </None>
     <None Include="..\Shaders\lamp_shader.frag">
       <Filter>Pliki zasobów</Filter>
     </None>
     <None Include="..\Shaders\lamp_shader.vert">
+      <Filter>Pliki zasobów</Filter>
+    </None>
+    <None Include="..\Shaders\gouraud_lighting_shader.frag">
+      <Filter>Pliki zasobów</Filter>
+    </None>
+    <None Include="..\Shaders\gouraud_lighting_shader.vert">
       <Filter>Pliki zasobów</Filter>
     </None>
   </ItemGroup>

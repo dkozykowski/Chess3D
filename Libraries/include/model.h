@@ -5,7 +5,7 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <stb_image.h>
+#include <stb/stb_image.h>
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
@@ -34,13 +34,15 @@ public:
     string directory;
     bool gammaCorrection;
 
+    Model() {}
+
     Model(string const& path, glm::vec3 position, float scale = 1.0f, glm::vec3 rotation = glm::vec3(0.0f), bool gamma = false)
     {
         gammaCorrection = gamma;
         this->rotation = rotation;
         this->position = position;
         this->scale = glm::vec3(scale, scale, scale);
-        loadModel(path);
+        LoadModel(path);
     }
 
     void Draw(Shader& shader, glm::vec3 offset = glm::vec3(0, 0, 0), glm::vec3 rotation = glm::vec3(0.0f))
@@ -59,13 +61,13 @@ public:
 
 
         model = glm::scale(model, scale);
-        shader.setMat4("model", model);
+        shader.SetMat4("model", model);
         for (unsigned int i = 0; i < meshes.size(); i++)
             meshes[i].Draw(shader);
     }
 
 private:
-    void loadModel(string const& path)
+    void LoadModel(string const& path)
     {
         Assimp::Importer importer;
         const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
@@ -76,24 +78,24 @@ private:
         }
         directory = path.substr(0, path.find_last_of('/'));
 
-        processNode(scene->mRootNode, scene);
+        ProcessNode(scene->mRootNode, scene);
     }
 
-    void processNode(aiNode* node, const aiScene* scene)
+    void ProcessNode(aiNode* node, const aiScene* scene)
     {
         for (unsigned int i = 0; i < node->mNumMeshes; i++)
         {
             aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-            meshes.push_back(processMesh(mesh, scene));
+            meshes.push_back(ProcessMesh(mesh, scene));
         }
         for (unsigned int i = 0; i < node->mNumChildren; i++)
         {
-            processNode(node->mChildren[i], scene);
+            ProcessNode(node->mChildren[i], scene);
         }
 
     }
 
-    Mesh processMesh(aiMesh* mesh, const aiScene* scene)
+    Mesh ProcessMesh(aiMesh* mesh, const aiScene* scene)
     {
         vector<Vertex> vertices;
         vector<unsigned int> indices;
@@ -151,16 +153,16 @@ private:
         
         aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
         
-        vector<Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
+        vector<Texture> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
         textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
         
-        vector<Texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
+        vector<Texture> specularMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
         textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
         
-        std::vector<Texture> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal");
+        std::vector<Texture> normalMaps = LoadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal");
         textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
         
-        std::vector<Texture> heightMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height");
+        std::vector<Texture> heightMaps = LoadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height");
         textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
 
         
@@ -168,7 +170,7 @@ private:
     }
 
     
-    vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type, string typeName)
+    vector<Texture> LoadMaterialTextures(aiMaterial* mat, aiTextureType type, string typeName)
     {
         vector<Texture> textures;
         for (unsigned int i = 0; i < mat->GetTextureCount(type); i++)

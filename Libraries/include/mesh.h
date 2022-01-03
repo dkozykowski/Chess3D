@@ -43,7 +43,7 @@ public:
         this->indices = indices;
         this->textures = textures;
 
-        setupMesh();
+        SetupMesh();
     }
 
     void Draw(Shader& shader)
@@ -80,7 +80,7 @@ public:
 private:
     unsigned int VBO, EBO;
 
-    void setupMesh()
+    void SetupMesh()
     {
         glGenVertexArrays(1, &VAO);
         glGenBuffers(1, &VBO);
