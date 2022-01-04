@@ -142,13 +142,13 @@ public:
         // white figures
         bishopWhite = Figure(
             pathToModels + "white/bishop/bishop.obj",
-            glm::vec3(0, 0.12f, 3.85f),
+            glm::vec3(0, 0.12f, 0.0f),
             { glm::vec2(5, 7), glm::vec2(2, 7) },
             PIECE_SCALE
         );
         kingWhite = Figure(
             pathToModels + "white/king/king.obj",
-            glm::vec3(0.0, 0.12f, 5.225f),
+            glm::vec3(0.0, 0.12f, -1.4f),
             { glm::vec2(4, 7) },
             PIECE_SCALE
         );
@@ -161,19 +161,19 @@ public:
         );
         knightWhite = Figure(
             pathToModels + "white/knight/knight.obj",
-            glm::vec3(0, 0.12f, 3.2f),
+            glm::vec3(0, 0.12f, 0.6f),
             { glm::vec2(1, 7), glm::vec2(6, 7) },
             PIECE_SCALE
         );
         queenWhite = Figure(
             pathToModels + "white/queen/queen.obj",
-            glm::vec3(0, 0.12f, 4.52f),
+            glm::vec3(0, 0.12f, -0.68f),
             { glm::vec2(3, 7) },
             PIECE_SCALE
         );
         rookWhite = Figure(
             pathToModels + "white/rook/rook.obj",
-            glm::vec3(0, 0.12f, 2.55f),
+            glm::vec3(0, 0.12f, 1.28),
             { glm::vec2(0, 7), glm::vec2(7, 7) },
             PIECE_SCALE
         );
