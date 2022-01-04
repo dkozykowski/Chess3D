@@ -144,44 +144,38 @@ public:
             pathToModels + "white/bishop/bishop.obj",
             glm::vec3(0, 0.12f, 3.85f),
             { glm::vec2(5, 7), glm::vec2(2, 7) },
-            PIECE_SCALE,
-            glm::vec3(0, 180, 0)
+            PIECE_SCALE
         );
         kingWhite = Figure(
             pathToModels + "white/king/king.obj",
             glm::vec3(0.0, 0.12f, 5.225f),
             { glm::vec2(4, 7) },
-            PIECE_SCALE,
-            glm::vec3(0, 180, 0)
+            PIECE_SCALE
         );
         pawnWhite = Figure(
             pathToModels + "white/pawn/pawn.obj",
             glm::vec3(0, 0.12f, 1.9f),
             { glm::vec2(0, 6), glm::vec2(1, 6), glm::vec2(2, 6), glm::vec2(3, 6),
               glm::vec2(4, 6), glm::vec2(5, 6), glm::vec2(6, 6), glm::vec2(7, 6) },
-            PIECE_SCALE,
-            glm::vec3(0, 180, 0)
+            PIECE_SCALE
         );
         knightWhite = Figure(
             pathToModels + "white/knight/knight.obj",
             glm::vec3(0, 0.12f, 3.2f),
             { glm::vec2(1, 7), glm::vec2(6, 7) },
-            PIECE_SCALE,
-            glm::vec3(0, 180, 0)
+            PIECE_SCALE
         );
         queenWhite = Figure(
             pathToModels + "white/queen/queen.obj",
             glm::vec3(0, 0.12f, 4.52f),
             { glm::vec2(3, 7) },
-            PIECE_SCALE,
-            glm::vec3(0, 180, 0)
+            PIECE_SCALE
         );
         rookWhite = Figure(
             pathToModels + "white/rook/rook.obj",
             glm::vec3(0, 0.12f, 2.55f),
             { glm::vec2(0, 7), glm::vec2(7, 7) },
-            PIECE_SCALE,
-            glm::vec3(0, 180, 0)
+            PIECE_SCALE
         );
 	}
 private:

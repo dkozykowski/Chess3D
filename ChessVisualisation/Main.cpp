@@ -99,7 +99,7 @@ int main()
     glEnable(GL_DEPTH_TEST);
 
     Figureset figureset("../Models/");
-    //figureset.LoadFigures();
+    figureset.LoadFigures();
 
     Shader phongShader("../Shaders/phong_lighting_shader.vert", "../Shaders/phong_lighting_shader.frag");
     Shader gouraudShader("../Shaders/gouraud_lighting_shader.vert", "../Shaders/gouraud_lighting_shader.frag");
