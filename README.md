@@ -12,9 +12,9 @@ The user is also provided with controllers  allowing him to interact with what h
 
 Example preview videos from the application:
 
-https://user-images.githubusercontent.com/39924818/148082070-a98d11ea-ecb6-4f57-baa9-f13f7ab48626.mp4
+https://user-images.githubusercontent.com/39924818/148091726-c30d6ede-8500-4fb0-ac89-c6f9c0137a3e.mp4
 
-https://user-images.githubusercontent.com/39924818/148081903-9d4b29e2-7c25-4618-b8bf-f5c0590c5ac8.mp4
+https://user-images.githubusercontent.com/39924818/148091771-daaf0155-fc4e-4984-8933-b012d2b639d4.mp4
 
 https://user-images.githubusercontent.com/39924818/148082105-3896304e-4b58-4ab6-9467-812512594c67.mp4
 
@@ -27,7 +27,7 @@ https://user-images.githubusercontent.com/39924818/148082100-99aa29a3-e2ee-4cc1-
 &emsp;<kbd>escape</kbd> - close the application
 
 ### Camera
-&emsp;<kbd>space</kbd> - switch to the next camera (3 cameras availiable: #1 flying automaticly, #2 moved by user, #3 stable)
+&emsp;<kbd>space</kbd> - switch to the next camera (3 cameras availiable: #1 flying automatically, #2 moved by user, #3 stable)
 
 &emsp;Enabled only when camera #2 is the currently used camera:
 
